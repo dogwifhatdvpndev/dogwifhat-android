@@ -1,0 +1,89 @@
+plugins {
+    alias libs.plugins.android.application
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.kotlin.kapt
+    alias libs.plugins.dagger.hilt
+}
+
+android {
+    namespace 'com.dogwifhat.app'
+
+    defaultConfig {
+        applicationId "com.dogwifhatdvpn.app"
+
+        minSdk libs.versions.minSdk.get().toInteger()
+        targetSdk libs.versions.compileSdk.get().toInteger()
+        compileSdk libs.versions.compileSdk.get().toInteger()
+
+        versionCode 3
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
+            def versionName = variant.versionName
+            outputFileName = "${applicationId}_${versionName}.apk"
+        }
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField "String", "API_URL", "\"https://vpn-api.basedapps.co.uk\""
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "API_URL", "\"https://vpn-api.basedapps.co.uk\""
+        }
+    }
+    compileOptions {
+        sourceCompatibility libs.versions.targetJvm.get()
+        targetCompatibility libs.versions.targetJvm.get()
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion libs.versions.composeCompiler.get()
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+        // This fix aab issue
+        jniLibs.useLegacyPackaging = true
+    }
+    sourceSets {
+        main { jniLibs.srcDirs = ['libs'] }
+    }
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
+dependencies {
+
+    implementation libs.android.core.ktx
+    implementation libs.kotlin.stdlib
+    implementation libs.coroutines.core
+    implementation libs.timber
+    implementation libs.dagger.hilt
+    implementation libs.hilt.navigation.compose
+    implementation libs.lifecycle.runtime
+    implementation libs.bundles.compose
+    implementation libs.navigation
+    implementation libs.accompanist.systemuicontroller
+    implementation platform(libs.google.firebase.bom)
+    implementation libs.google.firebase.crashlytics
+    implementation libs.google.firebase.analytics
+    implementation libs.based.vpn
+
+    kapt libs.hilt.compiler
+
+    implementation(name: "libv2ray", ext: "aar")
+}
